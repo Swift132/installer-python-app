@@ -1,0 +1,50 @@
+import PySimpleGUI as sg
+import time
+
+# Define a função de tela de carregamento
+def carregamento():
+    layout = [[sg.Text('Por favor, aguarde enquanto o processo está sendo executado...')],
+              [sg.ProgressBar(1000, orientation='h', size=(20, 20), key='progressbar')],
+              [sg.Cancel()]]
+    window = sg.Window('Carregando...', layout)
+    for i in range(1000):
+        time.sleep(0.01)
+        event, values = window.read(timeout=0)
+        if event == 'Cancel' or event == sg.WIN_CLOSED:
+            window.close()
+            return False
+        window['progressbar'].update_bar(i + 1)
+    window.close()
+    return True
+
+# Define a função que será executada após o usuário clicar no botão
+def install_chrome():
+    # Executa a tela de carregamento
+    if not carregamento():
+        return
+    subprocess.call(['/bin/bash', './apps/update.sh'])
+
+# Define a função que será executada após o usuário clicar no botão
+def update():
+    # Executa a tela de carregamento
+    if not carregamento():
+        return
+    # Código para atualizar o sistema aqui
+
+# Cria a janela principal
+layout = [[sg.Button('Instalar Chrome', key='chrome')],
+          [sg.Button('Atualizar sistema', key='update')],
+          [sg.Button('Cancelar')]]
+janela = sg.Window('Minha janela', layout)
+
+# Loop principal do programa
+while True:
+    evento, valores = janela.read()
+    if evento == sg.WIN_CLOSED or evento == 'Cancelar':  # Se o usuário fechar a janela ou clicar em Cancelar
+        break
+    if evento == 'chrome':  # Se o usuário clicar em Instalar Chrome
+        install_chrome()
+    elif evento == 'update':  # Se o usuário clicar em Atualizar sistema
+        update()
+
+janela.close()
